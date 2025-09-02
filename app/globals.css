@@ -1,0 +1,36 @@
+/* app/globals.css */
+/* ============================================================================
+   Globais — foco em desempenho (mínimo CSS global, sem efeitos complexos)
+   ----------------------------------------------------------------------------
+   - Mantém Tailwind e reset básico.
+   - Evita regras desnecessárias que aumentam CSS inicial.
+   - Define color-scheme: light para consistência.
+   ========================================================================== */
+
+   @tailwind base;
+   @tailwind components;
+   @tailwind utilities;
+   
+   :root {
+     --bg: #ffffff;
+     --fg: #111111;
+     color-scheme: light;
+   }
+   
+   html, body { height: 100%; }
+   
+   body {
+     background: var(--bg);
+     color: var(--fg);
+     font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+   }
+   
+   /* Container padrão */
+   .container { max-width: 1280px; }
+   
+   /* Utilitário opcional para conteúdo pesado fora da dobra (aplique quando necessário)
+      .cv-auto reduz trabalho de render em seções não visíveis de imediato.
+   .cv-auto {
+     content-visibility: auto;
+     contain-intrinsic-size: 1000px 800px;
+   } */

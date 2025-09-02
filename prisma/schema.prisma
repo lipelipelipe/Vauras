@@ -1,0 +1,283 @@
+// prisma/schema.prisma
+// ============================================================
+// Banco: PostgreSQL (Neon) — Prisma completo do projeto
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ========================
+// Enums
+// ========================
+enum PostStatus {
+  draft
+  published
+  scheduled
+}
+
+enum PageStatus {
+  draft
+  published
+  scheduled
+}
+
+enum CommentStatus {
+  approved
+  pending
+  blocked
+  deleted
+}
+
+enum BlockRuleKind {
+  ip
+  email
+  nick
+}
+
+enum AssetEntityType {
+  post
+  page
+}
+
+// ========================
+// Models principais
+// ========================
+
+// Posts (artigos)
+model Post {
+  id             String      @id @default(cuid())
+  groupId        String?
+  locale         String
+  title          String
+  slug           String
+  coverUrl       String?
+  excerpt        String?
+  content        String?
+  category       String
+  tags           String[]
+  status         PostStatus
+  publishedAt    DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  // SEO
+  seoTitle        String?
+  seoDescription  String?
+  canonicalUrl    String?
+  focusKeyphrase  String?
+  indexable       Boolean     @default(true)
+  follow          Boolean     @default(true)
+
+  // Novos campos
+  authorName     String?      // Autor exibido no artigo e no JSON-LD como Person (quando existir)
+  imageAlt       String?      // ALT padrão aplicado às imagens do conteúdo (fallback)
+
+  // Web Story
+  isWebStory     Boolean     @default(false)
+  storyContent   String?
+  storyOptions   Json?
+
+  // Relations
+  comments       Comment[]
+
+  @@unique([locale, slug], name: "post_locale_slug_unique")
+  @@index([locale, status, publishedAt])
+  @@index([category])
+}
+
+// Comentários
+model Comment {
+  id           String         @id @default(cuid())
+  postId       String
+  post         Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
+  displayName  String
+  email        String?
+  emailHash    String?
+  ipHash       String?
+  content      String
+  status       CommentStatus  @default(approved)
+  isFake       Boolean        @default(false)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([postId, status, createdAt])
+  @@index([emailHash])
+  @@index([ipHash])
+}
+
+// Páginas CMS (estáticas)
+model Page {
+  id             String      @id @default(cuid())
+  groupId        String?
+  locale         String
+  title          String
+  path           String
+  excerpt        String?
+  content        String?
+  coverUrl       String?
+  status         PageStatus   @default(draft)
+  publishedAt    DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  // SEO
+  seoTitle        String?
+  seoDescription  String?
+  canonicalUrl    String?
+  indexable       Boolean     @default(true)
+  follow          Boolean     @default(true)
+
+  @@unique([locale, path], name: "page_locale_path_unique")
+  @@index([locale, status, updatedAt])
+}
+
+// Categorias
+model Category {
+  id        String   @id @default(cuid())
+  locale    String
+  slug      String
+  name      String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([locale, slug], name: "category_locale_slug")
+  @@index([locale, order])
+}
+
+// Menu principal
+model MenuItem {
+  id        String   @id @default(cuid())
+  locale    String
+  label     String
+  href      String
+  order     Int      @default(0)
+  visible   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([locale, href], name: "menu_locale_href_unique")
+  @@index([locale, order])
+}
+
+// Rodapé (grupos e links)
+model FooterGroup {
+  id        String       @id @default(cuid())
+  locale    String
+  title     String
+  order     Int          @default(0)
+  visible   Boolean      @default(true)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  links     FooterLink[]
+
+  @@unique([locale, title])
+  @@index([locale, order])
+}
+
+model FooterLink {
+  id        String      @id @default(cuid())
+  groupId   String
+  group     FooterGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  label     String
+  href      String
+  external  Boolean     @default(false)
+  rel       String?
+  order     Int         @default(0)
+  visible   Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@index([groupId, order])
+}
+
+// Regras de bloqueio (comentários)
+model BlockRule {
+  id         String         @id @default(cuid())
+  kind       BlockRuleKind
+  value      String?
+  valueHash  String?
+  reason     String?
+  active     Boolean        @default(true)
+  expiresAt  DateTime?
+  createdAt  DateTime       @default(now())
+
+  @@index([active, kind])
+  @@index([valueHash])
+  @@index([value])
+}
+
+// Settings (singleton)
+model Settings {
+  id                      String   @id
+  siteName                Json
+  titleTemplate           Json
+  defaultMetaDescription  Json?
+  defaultMetaImage        String?
+  siteUrl                 String?
+  logoUrl                 String?
+  twitterHandle           String?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
+// Traduções de UI (seed usa)
+model UITranslation {
+  id         String   @id @default(cuid())
+  locale     String
+  namespace  String
+  data       Json
+  published  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([locale, namespace], name: "locale_namespace")
+  @@index([locale, namespace])
+}
+
+// Usuário (NextAuth Credentials)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ========================
+// Assets (Vercel Blob) + Refs
+// ========================
+model Asset {
+  id           String    @id @default(cuid())
+  url          String    @unique
+  key          String?
+  contentType  String?
+  size         Int?
+  checksum     String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  refs         AssetRef[]
+}
+
+model AssetRef {
+  id         String          @id @default(cuid())
+  assetId    String
+  entityType AssetEntityType
+  entityId   String
+  createdAt  DateTime        @default(now())
+
+  asset      Asset           @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@unique([assetId, entityType, entityId])
+  @@index([assetId])
+  @@index([entityType, entityId])
+}

@@ -1,0 +1,45 @@
+/* src/styles/admin-tokens.css (opcional)
+===============================================================================
+Admin Tokens — variáveis de design para o painel (opcional)
+-------------------------------------------------------------------------------
+- Não obrigatório: o design já funciona só com Tailwind.
+- Útil para ajustes finos por CSS vars (temas, radius, sombras).
+=============================================================================== */
+
+:root {
+    /* Espaços base (8px scale) */
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-6: 24px;
+    --space-8: 32px;
+  
+    /* Radius */
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 20px;
+  
+    /* Sombras (cards) */
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 2px 8px rgba(0,0,0,0.06);
+  
+    /* Cores */
+    --color-surface: #ffffff;
+    --color-subtle: #f8fafc;
+    --color-border: #e5e7eb;
+    --color-text: #0f172a;
+    --color-text-2: #475569;
+  
+    /* Estados */
+    --color-success-bg: #d1fae5; /* emerald-100 */
+    --color-success-fg: #065f46; /* emerald-800 */
+    --color-warn-bg: #fef3c7;    /* amber-100 */
+    --color-warn-fg: #92400e;    /* amber-800 */
+    --color-danger-bg: #fee2e2;  /* rose-100 */
+    --color-danger-fg: #991b1b;  /* rose-800 */
+  }
+  
+  /* Escopo opcional para isolar estilos do Admin */
+  [data-admin='true'] {
+    --color-surface: #ffffff;
+  }
