@@ -26,14 +26,24 @@ const nextConfig = {
 
   images: {
     remotePatterns: [
-      // Vercel Blob (public)
-      { protocol: 'https', hostname: 'public.blob.vercel-storage.com' },
+      // Vercel Blob (public) - CORRIGIDO com curinga para subdomínios
+      {
+        protocol: 'https',
+        hostname: '*.public.blob.vercel-storage.com',
+        pathname: '/**',
+      },
+      // Adicionado para cobrir o caso base (sem subdomínio)
+      {
+        protocol: 'https',
+        hostname: 'public.blob.vercel-storage.com',
+        pathname: '/**',
+      },
 
-      // Fontes de imagens realmente usadas
-      { protocol: 'https', hostname: 'images.unsplash.com' },
-      { protocol: 'https', hostname: 'images.cdn.yle.fi' },
-      { protocol: 'https', hostname: 'assets.apu.fi' },
-      { protocol: 'https', hostname: 'media.istockphoto.com' },
+      // Fontes de imagens realmente usadas (com pathname para robustez)
+      { protocol: 'https', hostname: 'images.unsplash.com', pathname: '/**' },
+      { protocol: 'https', hostname: 'images.cdn.yle.fi', pathname: '/**' },
+      { protocol: 'https', hostname: 'assets.apu.fi', pathname: '/**' },
+      { protocol: 'https', hostname: 'media.istockphoto.com', pathname: '/**' },
     ],
   },
 
