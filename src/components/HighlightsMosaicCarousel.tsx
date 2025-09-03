@@ -7,6 +7,8 @@
 // - Indicadores com alvo ≥ 44x44px (WCAG).
 // - Proteção: quando a capa usa fallback local, desativa otimização (unoptimized)
 //   para evitar o erro do Sharp em dev se o arquivo estiver ausente/corrompido.
+// - Adicionado 'isolation: isolate' para criar um novo contexto de empilhamento
+//   e prevenir vazamento de z-index (overlay bug).
 // ============================================================================
 
 'use client';
@@ -257,6 +259,7 @@ export default function HighlightsMosaicCarousel({
       className={clsx('relative', className)}
       onMouseEnter={() => { isHover.current = true; }}
       onMouseLeave={() => { isHover.current = false; }}
+      style={{ isolation: 'isolate' }}
     >
       <div className="relative overflow-hidden rounded-2xl ring-1 ring-black/5 bg-white h-[560px] sm:h-[600px] md:h-[560px] xl:h-[620px] shadow-sm">
         <div
