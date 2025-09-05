@@ -1,17 +1,10 @@
 // src/components/Footer.tsx
-// ============================================================================
-// Footer — ultra leve, sem usePathname, com re-renders mínimos
-// ----------------------------------------------------------------------------
-// - Remove verificação de rota/admin no cliente (o route group já isola admin).
-// - Usa I18nProvider para obter siteName e strings do footer.
-// - Componente memoizado para evitar re-render desnecessário.
-// - Apenas renderiza links visíveis recebidos do servidor.
-// ============================================================================
 
 'use client';
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useI18n } from './I18nProvider';
 import type { PublicFooterGroup } from '@/lib/footer';
 
@@ -23,7 +16,6 @@ function FooterBase({ data = [] }: Props) {
   const { locale, messages } = useI18n();
   const t = (k: string) => messages?.footer?.[k] ?? k;
 
-  // Nome do site dinâmico injetado pelo Layout no namespace "brand"
   const siteName: string = (messages?.brand?.siteName as string) || 'Uutiset';
 
   return (
@@ -34,9 +26,18 @@ function FooterBase({ data = [] }: Props) {
             <Link href={`/${locale}`} className="font-semibold text-lg tracking-tight text-gray-900">
               {siteName}
             </Link>
-            <p className="mt-2 text-sm text-gray-500">
-              © {new Date().getFullYear()} {siteName} • {t('tagline')}
-            </p>
+            <div className="mt-2 flex items-center gap-2 text-sm text-gray-500">
+                <Image
+                    src="/logo-96x96.png" // <-- APONTANDO PARA SEU ARQUIVO PNG
+                    alt={`${siteName} logo`}
+                    width={20}
+                    height={20}
+                    className="h-5 w-5"
+                />
+                <span>
+                    © {new Date().getFullYear()} {siteName} • {t('tagline')}
+                </span>
+            </div>
           </div>
 
           {data.map((group) => (
