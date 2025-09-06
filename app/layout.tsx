@@ -26,6 +26,11 @@ export const metadata: Metadata = {
   // Garante URLs absolutas em canonical/alternates
   metadataBase: new URL(siteOrigin),
 
+  // ADICIONADO: Verificação do Google Search Console
+  verification: {
+    google: "qumJFxsNxuvEWMlx_xFLfizt5GH0MVSxJ54I0u8dK4M",
+  },
+
   // Default global de robots; cada rota pode sobrescrever via generateMetadata
   robots: {
     index: !disallowAll,
