@@ -1,10 +1,11 @@
 // app/layout.tsx
 // ============================================================================
-// Root Layout — Defaults globais de SEO (metadataBase + robots)
+// Root Layout — Defaults globais de SEO (metadataBase + robots + verification)
 // ----------------------------------------------------------------------------
 // - metadataBase: garante URLs absolutas (canonical/alternates).
 // - robots: default explícito index/follow (override por página quando preciso).
 // - ROBOTS_DISALLOW_ALL: se ligado (1/true/yes/on), força noindex,nofollow no site todo.
+// - verification: meta para Google Search Console.
 // ============================================================================
 
 import './globals.css';
@@ -26,9 +27,9 @@ export const metadata: Metadata = {
   // Garante URLs absolutas em canonical/alternates
   metadataBase: new URL(siteOrigin),
 
-  // ADICIONADO: Verificação do Google Search Console
+  // Verificação do Google Search Console
   verification: {
-    google: "qumJFxsNxuvEWMlx_xFLfizt5GH0MVSxJ54I0u8dK4M",
+    google: "f7RlXcMJfn6gzK1iBmureBSNQ2DoLJ06SrbzKPVfykY",
   },
 
   // Default global de robots; cada rota pode sobrescrever via generateMetadata
